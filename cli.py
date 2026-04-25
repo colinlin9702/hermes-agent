@@ -3175,7 +3175,7 @@ class HermesCLI:
         # (e.g. "my-provider") as the model string to the API instead of
         # the configured model (e.g. "qwen3.6-plus"), causing 400 errors.
         runtime_model = runtime.get("model")
-        if runtime_model and isinstance(runtime_model, str):
+        if runtime_model and isinstance(runtime_model, str) and not getattr(self, "_user_switched_model", False):
             self.model = runtime_model
 
         # If model is still empty (e.g. user ran `hermes auth add openai-codex`
@@ -5116,6 +5116,7 @@ class HermesCLI:
 
         old_model = self.model
         self.model = result.new_model
+        self._user_switched_model = True
         self.provider = result.target_provider
         self.requested_provider = result.target_provider
         if result.api_key:
@@ -5336,6 +5337,7 @@ class HermesCLI:
         # overwrite the switch on the next turn (it re-resolves from this).
         old_model = self.model
         self.model = result.new_model
+        self._user_switched_model = True
         self.provider = result.target_provider
         self.requested_provider = result.target_provider
         if result.api_key:
